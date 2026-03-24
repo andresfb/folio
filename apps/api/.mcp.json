@@ -1,0 +1,17 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "php",
+            "args": [
+                "artisan",
+                "boost:mcp"
+            ]
+        },
+        "jcodemunch-mcp": {
+            "command": "uvx",
+            "args": [
+                "jcodemunch-mcp"
+            ]
+        }
+    }
+}
