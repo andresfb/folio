@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes with auth rate limiter (5/min - brute force protection)
 Route::middleware('throttle:auth')->group(function (): void {
-    Route::post('register', [AuthController::class, 'register'])->name('api.v1.register');
+// No registration allowed
+//    Route::post('register', [AuthController::class, 'register'])->name('api.v1.register');
     Route::post('login', [AuthController::class, 'login'])->name('api.v1.login');
 });
 
@@ -34,10 +35,11 @@ Route::middleware(['auth:sanctum', 'throttle:authenticated'])->group(function ()
         ->name('verification.send');
 });
 
+// No Password resets allowed
 // Password reset routes (public with rate limiting)
-Route::middleware('throttle:6,1')->group(function (): void {
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
-        ->name('password.email');
-    Route::post('reset-password', [AuthController::class, 'resetPassword'])
-        ->name('password.reset');
-});
+//Route::middleware('throttle:6,1')->group(function (): void {
+//    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
+//        ->name('password.email');
+//    Route::post('reset-password', [AuthController::class, 'resetPassword'])
+//        ->name('password.reset');
+//});

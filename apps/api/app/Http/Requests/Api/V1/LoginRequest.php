@@ -10,6 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * @property string $email
  * @property string $password
+ * @property string $client
  */
 final class LoginRequest extends FormRequest
 {
@@ -26,6 +27,7 @@ final class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'client' => ['required', 'string', 'min:4', 'max:25'],
         ];
     }
 }

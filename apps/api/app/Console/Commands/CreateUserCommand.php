@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Actions\Fortify\CreateNewUser;
+use App\Actions\CreateUserAction;
 use App\Models\User;
 use Exception;
 use Illuminate\Console\Command;
@@ -23,7 +23,7 @@ final class CreateUserCommand extends Command
 
     protected $description = 'Creates a new User';
 
-    public function handle(CreateNewUser $action): void
+    public function handle(CreateUserAction $action): void
     {
         try {
             clear();
@@ -64,7 +64,7 @@ final class CreateUserCommand extends Command
                 throw new RuntimeException('Password does not match');
             }
 
-            $user = $action->create($results);
+            $user = $action->handle($results);
 
             $user->email_verified_at = now()->toDateTimeString();
             $user->save();
