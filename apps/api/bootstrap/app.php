@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailVerified::class,
         ]);
 
-        $middleware->redirectGuestsTo(fn () => null);
+        $middleware->redirectGuestsTo(fn (): null => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e) {

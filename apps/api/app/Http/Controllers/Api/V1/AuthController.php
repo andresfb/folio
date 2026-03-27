@@ -76,15 +76,13 @@ final class AuthController extends ApiController
         $user = $request->user();
         $user->currentAccessToken()->delete();
 
-        UserAccessEvent::dispatch(
-            new AccessItem(
-                userId: $user->id,
-                type: AccessType::LOGOUT,
-                ipAddress: $request->ip(),
-                agent: $request->header('User-Agent'),
-                loginAt: now(),
-            )
-        );
+        event(new UserAccessEvent(new AccessItem(
+            userId: $user->id,
+            type: AccessType::LOGOUT,
+            ipAddress: $request->ip(),
+            agent: $request->header('User-Agent'),
+            loginAt: now(),
+        )));
 
         return $this->success(message: 'Logged out successfully');
     }
@@ -92,7 +90,7 @@ final class AuthController extends ApiController
     public function me(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'full' => 'nullable|boolean',
+            'full' => ['nullable', 'boolean'],
         ]);
 
         $user = $request->user();

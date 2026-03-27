@@ -2,11 +2,14 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Facades\Date;
 use App\Models\Workspace;
 use App\Models\WorkspaceMember;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
+/**
+ * @extends Factory<WorkspaceMember>
+ */
 class WorkspaceMemberFactory extends Factory
 {
     protected $model = WorkspaceMember::class;
@@ -16,8 +19,8 @@ class WorkspaceMemberFactory extends Factory
         return [
             'user_id' => $this->faker->word(),
             'role' => $this->faker->word(),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'created_at' => Date::now(),
+            'updated_at' => Date::now(),
 
             'workspace_id' => Workspace::factory(),
         ];

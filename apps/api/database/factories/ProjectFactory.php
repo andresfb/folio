@@ -2,12 +2,15 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Facades\Date;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
+/**
+ * @extends Factory<Project>
+ */
 class ProjectFactory extends Factory
 {
     protected $model = Project::class;
@@ -19,8 +22,8 @@ class ProjectFactory extends Factory
             'title' => $this->faker->word(),
             'description' => $this->faker->text(),
             'active' => $this->faker->boolean(),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'created_at' => Date::now(),
+            'updated_at' => Date::now(),
 
             'user_id' => User::factory(),
             'workspace_id' => Workspace::factory(),

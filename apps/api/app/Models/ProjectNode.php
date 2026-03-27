@@ -65,7 +65,7 @@ class ProjectNode extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(__CLASS__, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     public function getSlugOptions(): SlugOptions

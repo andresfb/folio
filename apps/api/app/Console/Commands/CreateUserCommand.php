@@ -58,7 +58,7 @@ final class CreateUserCommand extends Command
                 )
                 ->submit();
 
-            if (User::where('email', $results['email'])->exists()) {
+            if (User::query()->where('email', $results['email'])->exists()) {
                 throw new RuntimeException('This email already exists');
             }
 
@@ -71,7 +71,7 @@ final class CreateUserCommand extends Command
             $action->handle($item, $token, now());
 
             info('User created');
-            warning("API Token: $token");
+            warning("API Token: {$token}");
         } catch (Throwable $e) {
             error($e->getMessage());
         } finally {

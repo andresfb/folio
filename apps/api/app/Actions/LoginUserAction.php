@@ -41,15 +41,13 @@ final class LoginUserAction
 
         $token = $user->createToken($item->client)->plainTextToken;
 
-        UserAccessEvent::dispatch(
-            new AccessItem(
-                userId: $user->id,
-                type: AccessType::LOGIN,
-                ipAddress: $item->ipAddress,
-                agent: $item->agent,
-                loginAt: now(),
-            )
-        );
+        event(new UserAccessEvent(new AccessItem(
+            userId: $user->id,
+            type: AccessType::LOGIN,
+            ipAddress: $item->ipAddress,
+            agent: $item->agent,
+            loginAt: now(),
+        )));
 
         return $user;
     }

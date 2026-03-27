@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Models\UserAccess;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<UserAccess>
+ */
 class UserAccessFactory extends Factory
 {
     protected $model = UserAccess::class;

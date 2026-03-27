@@ -29,7 +29,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        Gate::define('viewApiDocs', static function (User $user) {
+        Gate::define('viewApiDocs', static function (User $user): bool {
             return $user->email === Config::string('constants.admin_email');
         });
     }
