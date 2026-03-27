@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\LogApiRequests;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,7 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'log.api' => LogApiRequests::class,
             'verified' => EnsureEmailVerified::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (AuthenticationException $e) {
+            return response()->json(['message' => $e->getMessage()], 401);
+        });
     })->create();

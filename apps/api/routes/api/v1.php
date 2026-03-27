@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,30 +17,45 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes with auth rate limiter (5/min - brute force protection)
 Route::middleware('throttle:auth')->group(function (): void {
-// No registration allowed
-//    Route::post('register', [AuthController::class, 'register'])->name('api.v1.register');
-    Route::post('login', [AuthController::class, 'login'])->name('api.v1.login');
+    Route::get('ping', static function () {
+        return response()->json([
+            'pong' => str(Inspiring::quote())
+                ->stripTags()
+                ->replace("\n", '')
+                ->replace('   ', ' ')
+                ->replace('  ', ' ')
+                ->trim(),
+        ]);
+    });
+
+    // No registration allowed
+    //    Route::post('register', [AuthController::class, 'register'])->name('api.v1.register');
+    Route::post('login', [AuthController::class, 'login'])
+        ->name('api.v1.login');
 });
 
 // Protected routes with authenticated rate limiter (120/min)
 Route::middleware(['auth:sanctum', 'throttle:authenticated'])->group(function (): void {
-    Route::post('logout', [AuthController::class, 'logout'])->name('api.v1.logout');
-    Route::get('me', [AuthController::class, 'me'])->name('api.v1.me');
+    Route::post('logout', [AuthController::class, 'logout'])
+        ->name('api.v1.logout');
+
+    Route::get('me', [AuthController::class, 'me'])
+        ->name('api.v1.me');
 
     // Email verification
     Route::post('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
         ->middleware('signed')
         ->name('verification.verify');
+
     Route::post('email/resend', [AuthController::class, 'resendVerificationEmail'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
 });
 
-// No Password resets allowed
 // Password reset routes (public with rate limiting)
-//Route::middleware('throttle:6,1')->group(function (): void {
-//    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
-//        ->name('password.email');
-//    Route::post('reset-password', [AuthController::class, 'resetPassword'])
-//        ->name('password.reset');
-//});
+Route::middleware('throttle:6,1')->group(function (): void {
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
+        ->name('password.email');
+    Route::post('reset-password', [AuthController::class, 'resetPassword'])
+        ->name('password.reset');
+});

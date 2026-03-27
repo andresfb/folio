@@ -1,0 +1,22 @@
+info:
+  name: Login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{process.env.API_URL}}/login"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{process.env.ADMIN_EMAIL}}",
+        "password": "{{process.env.ADMIN_PASSWORD}}",
+        "client": "bruno"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

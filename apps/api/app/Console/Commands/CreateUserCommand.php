@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Actions\CreateUserAction;
+use App\Dtos\NewUserItem;
 use App\Models\User;
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use RuntimeException;
+use Throwable;
 
 use function Laravel\Prompts\clear;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\form;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
+use function Laravel\Prompts\warning;
 
 final class CreateUserCommand extends Command
 {
@@ -57,18 +59,20 @@ final class CreateUserCommand extends Command
                 ->submit();
 
             if (User::where('email', $results['email'])->exists()) {
-                throw new RuntimeException('User with that email exists');
+                throw new RuntimeException('This email already exists');
             }
 
             if ($results['password'] !== $results['password_confirmation']) {
                 throw new RuntimeException('Password does not match');
             }
 
-            $user = $action->handle($results);
+            $token = '';
+            $item = NewUserItem::from($results);
+            $action->handle($item, $token, now());
 
-            $user->email_verified_at = now()->toDateTimeString();
-            $user->save();
-        } catch (Exception $e) {
+            info('User created');
+            warning("API Token: $token");
+        } catch (Throwable $e) {
             error($e->getMessage());
         } finally {
             $this->newLine();

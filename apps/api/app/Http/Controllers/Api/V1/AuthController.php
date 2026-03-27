@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\CreateUserAction;
+use App\Actions\LoginUserAction;
+use App\Dtos\AccessItem;
+use App\Dtos\LoginUserItem;
+use App\Dtos\NewUserItem;
+use App\Enums\AccessType;
+use App\Events\UserAccessEvent;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Api\V1\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
@@ -19,20 +26,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Throwable;
 
 final class AuthController extends ApiController
 {
-    public function register(RegisterRequest $request): JsonResponse
+    public function register(RegisterRequest $request, CreateUserAction $action): JsonResponse
     {
-        $user = User::query()->create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $token = '';
+        $item = NewUserItem::from($request);
 
-        $user->sendEmailVerificationNotification();
-
-        $token = $user->createToken('auth-token')->plainTextToken;
+        try {
+            $user = $action->handle($item, $token);
+        } catch (Throwable $e) {
+            return $this->error(
+                $e->getMessage(),
+                $e->getCode(),
+            );
+        }
 
         return $this->created([
             'user' => new UserResource($user),
@@ -40,15 +50,19 @@ final class AuthController extends ApiController
         ], 'User registered successfully. Please check your email to verify your account.');
     }
 
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request, LoginUserAction $action): JsonResponse
     {
-        $user = User::query()->where('email', $request->email)->first();
+        $item = LoginUserItem::from($request)
+            ->withClientInfo(
+                $request->ip(),
+                $request->userAgent()
+            );
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return $this->unauthorized('Invalid credentials');
+        $token = '';
+        $user = $action->handle($item, $token);
+        if (blank($user)) {
+            return $this->unauthorized($action->getError());
         }
-
-        $token = $user->createToken($request->client)->plainTextToken;
 
         return $this->success([
             'user' => new UserResource($user),
@@ -62,12 +76,31 @@ final class AuthController extends ApiController
         $user = $request->user();
         $user->currentAccessToken()->delete();
 
+        UserAccessEvent::dispatch(
+            new AccessItem(
+                userId: $user->id,
+                type: AccessType::LOGOUT,
+                ipAddress: $request->ip(),
+                agent: $request->header('User-Agent'),
+                loginAt: now(),
+            )
+        );
+
         return $this->success(message: 'Logged out successfully');
     }
 
     public function me(Request $request): JsonResponse
     {
-        return $this->success(new UserResource($request->user()));
+        $validated = $request->validate([
+            'full' => 'nullable|boolean',
+        ]);
+
+        $user = $request->user();
+        if (isset($validated['full'])) {
+            $user->load('workspace.members');
+        }
+
+        return $this->success($user);
     }
 
     public function verifyEmail(VerifyEmailRequest $request): JsonResponse
@@ -120,7 +153,7 @@ final class AuthController extends ApiController
     {
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password): void {
+            static function (User $user, string $password): void {
                 $user->forceFill([
                     'password' => Hash::make($password),
                 ])->save();

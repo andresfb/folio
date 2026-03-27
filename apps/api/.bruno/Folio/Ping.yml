@@ -1,0 +1,14 @@
+info:
+  name: Ping
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{process.env.API_URL}}/ping"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
