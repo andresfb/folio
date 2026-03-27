@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
-use Illuminate\Support\Facades\Date;
 use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Date;
 
 /**
  * @extends Factory<Workspace>
  */
-class WorkspaceFactory extends Factory
+final class WorkspaceFactory extends Factory
 {
     protected $model = Workspace::class;
 

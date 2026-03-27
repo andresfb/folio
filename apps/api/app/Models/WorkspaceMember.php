@@ -27,11 +27,11 @@ final class WorkspaceMember extends Model
     use HasFactory;
     use HasUuids;
 
+    public $incrementing = false;
+
     protected $guarded = [];
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     public function workspace(): BelongsTo
     {

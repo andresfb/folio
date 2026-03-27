@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
-use Illuminate\Support\Facades\Date;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Date;
 
 /**
  * @extends Factory<Project>
  */
-class ProjectFactory extends Factory
+final class ProjectFactory extends Factory
 {
     protected $model = Project::class;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\NodeType;
@@ -34,19 +36,19 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read User $user
  * @property-read ProjectNode|null $parent
  */
-class ProjectNode extends Model
+final class ProjectNode extends Model
 {
     use Archivable;
+    use HasFactory;
     use HasSlug;
     use HasUuids;
-    use HasFactory;
     use SoftDeletes;
+
+    public $incrementing = false;
 
     protected $keyType = 'string';
 
     protected $guarded = [];
-
-    public $incrementing = false;
 
     public function workspace(): BelongsTo
     {

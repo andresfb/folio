@@ -37,11 +37,11 @@ final class Workspace extends Model
     use HasUuids;
     use SoftDeletes;
 
+    public $incrementing = false;
+
     protected $guarded = [];
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     public function owner(): BelongsTo
     {

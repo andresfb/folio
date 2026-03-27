@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use App\Models\ProjectNode;
@@ -7,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /** @mixin ProjectNode */
-class ProjectNodeResource extends JsonResource
+final class ProjectNodeResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -29,7 +31,7 @@ class ProjectNodeResource extends JsonResource
             'workspace' => new WorkspaceResource($this->whenLoaded('workspace')),
             'project' => new ProjectResource($this->whenLoaded('project')),
             'user' => new UserResource($this->whenLoaded('user')),
-            'parent' => new ProjectNodeResource($this->whenLoaded('parent')),
+            'parent' => new self($this->whenLoaded('parent')),
         ];
     }
 }

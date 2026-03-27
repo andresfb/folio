@@ -22,8 +22,8 @@ use Override;
  */
 final class UserAccess extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
 
     public $incrementing = false;
 
