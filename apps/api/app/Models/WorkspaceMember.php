@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\MemberRole;
 use Carbon\CarbonInterface;
+use Database\Factories\WorkspaceMemberFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,9 @@ use Override;
  */
 final class WorkspaceMember extends Model
 {
+    /** @use HasFactory<WorkspaceMemberFactory> */
     use HasFactory;
+
     use HasUuids;
 
     public $incrementing = false;
@@ -33,16 +36,21 @@ final class WorkspaceMember extends Model
 
     protected $keyType = 'string';
 
+    /** @return BelongsTo<Workspace, $this> */
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function member(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[Override]
     protected function casts(): array
     {

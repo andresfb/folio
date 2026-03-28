@@ -43,7 +43,7 @@ final readonly class CreateUserAction
             $user->email_verified_at = $verifiedAt;
             $user->save();
 
-            return $user->fresh();
+            return $user->fresh() ?? $user;
         });
     }
 

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
+use Database\Factories\WorkspaceFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,12 +29,14 @@ use Spatie\Sluggable\SlugOptions;
  * @property CarbonInterface|null $created_at
  * @property CarbonInterface|null $updated_at
  * @property-read User $owner
- * @property-read Collection<WorkspaceMember> $members
- * @property-read Collection<Project> $projects
+ * @property-read Collection<int, WorkspaceMember> $members
+ * @property-read Collection<int, Project> $projects
  */
 final class Workspace extends Model
 {
+    /** @use HasFactory<WorkspaceFactory> */
     use HasFactory;
+
     use HasSlug;
     use HasUuids;
     use SoftDeletes;
@@ -43,16 +47,19 @@ final class Workspace extends Model
 
     protected $keyType = 'string';
 
+    /** @return BelongsTo<User, $this> */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return HasMany<WorkspaceMember, $this> */
     public function members(): HasMany
     {
         return $this->hasMany(WorkspaceMember::class);
     }
 
+    /** @return HasMany<Project, $this> */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
@@ -64,7 +71,7 @@ final class Workspace extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug')
             ->slugsShouldBeNoLongerThan(50)
-            ->extraScope(fn ($builder) => $builder->where('user_id', $this->user_id))
+            ->extraScope(fn (Builder $builder) => $builder->where('user_id', $this->user_id))
             ->useSuffixOnFirstOccurrence();
     }
 
@@ -73,6 +80,9 @@ final class Workspace extends Model
         return 'slug';
     }
 
+    /**
+     * @return array<string, string>
+     */
     #[Override]
     protected function casts(): array
     {

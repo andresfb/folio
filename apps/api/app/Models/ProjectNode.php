@@ -6,6 +6,8 @@ namespace App\Models;
 
 use App\Enums\NodeType;
 use Carbon\CarbonInterface;
+use Database\Factories\ProjectNodeFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,7 +41,10 @@ use Spatie\Sluggable\SlugOptions;
 final class ProjectNode extends Model
 {
     use Archivable;
+
+    /** @use HasFactory<ProjectNodeFactory> */
     use HasFactory;
+
     use HasSlug;
     use HasUuids;
     use SoftDeletes;
@@ -50,21 +55,25 @@ final class ProjectNode extends Model
 
     protected $guarded = [];
 
+    /** @return BelongsTo<Workspace, $this> */
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<ProjectNode, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
@@ -76,7 +85,7 @@ final class ProjectNode extends Model
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug')
             ->slugsShouldBeNoLongerThan(50)
-            ->extraScope(fn ($builder) => $builder->where('project_id', $this->project_id))
+            ->extraScope(fn (Builder $builder) => $builder->where('project_id', $this->project_id))
             ->useSuffixOnFirstOccurrence();
     }
 
@@ -85,6 +94,9 @@ final class ProjectNode extends Model
         return 'slug';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[Override]
     protected function casts(): array
     {

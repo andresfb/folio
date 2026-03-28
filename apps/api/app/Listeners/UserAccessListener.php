@@ -15,6 +15,12 @@ final class UserAccessListener implements ShouldQueue
 
     public function handle(UserAccessEvent $event): void
     {
-        UserAccess::query()->create($event->accessItem->toArray());
+        UserAccess::query()->create([
+            'user_id' => $event->accessItem->userId,
+            'type' => $event->accessItem->type,
+            'ip_address' => $event->accessItem->ipAddress,
+            'agent' => $event->accessItem->agent,
+            'login_at' => $event->accessItem->loginAt,
+        ]);
     }
 }

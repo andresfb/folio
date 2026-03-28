@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(vendor/bin/pint --dirty --format agent)",
-      "mcp__laravel-boost__last-error"
+      "mcp__laravel-boost__last-error",
+      "Bash(vendor/bin/phpstan analyse:*)"
     ]
   },
   "enabledMcpjsonServers": [

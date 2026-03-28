@@ -4,6 +4,7 @@ includes:
     - phar://phpstan.phar/conf/bleedingEdge.neon
 
 parameters:
+    treatPhpDocTypesAsCertain: false
 
     paths:
         - app

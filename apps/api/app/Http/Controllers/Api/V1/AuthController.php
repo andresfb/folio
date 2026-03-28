@@ -54,8 +54,8 @@ final class AuthController extends ApiController
     {
         $item = LoginUserItem::from($request)
             ->withClientInfo(
-                $request->ip(),
-                $request->userAgent()
+                $request->ip() ?? '0.0.0.0',
+                $request->userAgent() ?? 'N/A',
             );
 
         $token = '';
@@ -79,8 +79,8 @@ final class AuthController extends ApiController
         event(new UserAccessEvent(new AccessItem(
             userId: $user->id,
             type: AccessType::LOGOUT,
-            ipAddress: $request->ip(),
-            agent: $request->header('User-Agent'),
+            ipAddress: $request->ip() ?? '0.0.0.0',
+            agent: $request->userAgent() ?? 'N/A',
             loginAt: now(),
         )));
 
@@ -89,12 +89,12 @@ final class AuthController extends ApiController
 
     public function me(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'full' => ['nullable', 'boolean'],
         ]);
 
         $user = $request->user();
-        if (isset($validated['full'])) {
+        if ($request->boolean('full') && filled($user)) {
             $user->load('workspace.members');
         }
 

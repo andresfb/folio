@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 /** @mixin Project */
 final class ProjectResource extends JsonApiResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
@@ -23,8 +26,7 @@ final class ProjectResource extends JsonApiResource
             'updated_at' => $this->updated_at,
 
             'workspace_id' => $this->workspace_id,
-            'created_by_user_id' => $this->created_by_user_id,
-            'updated_by_user_id' => $this->updated_by_user_id,
+            'user_id' => $this->user_id,
 
             'workspace' => new WorkspaceResource($this->whenLoaded('workspace')),
             'createdBy' => new UserResource($this->whenLoaded('createdBy')),

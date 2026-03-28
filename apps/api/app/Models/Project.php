@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
+use Database\Factories\ProjectFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +34,10 @@ use Spatie\Sluggable\SlugOptions;
 final class Project extends Model
 {
     use Archivable;
+
+    /** @use HasFactory<ProjectFactory> */
     use HasFactory;
+
     use HasSlug;
     use HasUuids;
     use SoftDeletes;
@@ -43,11 +48,13 @@ final class Project extends Model
 
     protected $keyType = 'string';
 
+    /** @return BelongsTo<Workspace, $this> */
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -59,7 +66,7 @@ final class Project extends Model
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug')
             ->slugsShouldBeNoLongerThan(50)
-            ->extraScope(fn ($builder) => $builder->where('workspace_id', $this->workspace_id))
+            ->extraScope(fn (Builder $builder) => $builder->where('workspace_id', $this->workspace_id))
             ->useSuffixOnFirstOccurrence();
     }
 
@@ -68,6 +75,9 @@ final class Project extends Model
         return 'slug';
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [

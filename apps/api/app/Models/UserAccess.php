@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\AccessType;
 use Carbon\CarbonInterface;
+use Database\Factories\UserAccessFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,9 @@ use Override;
  */
 final class UserAccess extends Model
 {
+    /** @use HasFactory<UserAccessFactory> */
     use HasFactory;
+
     use HasUuids;
 
     public $incrementing = false;
@@ -31,11 +34,15 @@ final class UserAccess extends Model
 
     protected $guarded = [];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[Override]
     protected function casts(): array
     {

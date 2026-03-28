@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 /** @mixin WorkspaceMember */
 final class WorkspaceMemberResource extends JsonApiResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [

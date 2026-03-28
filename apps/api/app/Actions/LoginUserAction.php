@@ -16,7 +16,7 @@ final class LoginUserAction
 {
     private string $error = '';
 
-    public function handle(LoginUserItem $item, &$token): ?User
+    public function handle(LoginUserItem $item, string &$token): ?User
     {
         $user = User::query()
             ->where('email', $item->email)
